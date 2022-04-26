@@ -1,99 +1,121 @@
-/**
- * Any function that return a JSX is a function component in React
- * - Name must be capital
- * - React return a piece of HTML(JSX)
- * - It always accept an Object as an argument
- * - We can't call or invoke this function
- * -  We have user the component as a html tag
- *
- * Anything that is dynamic can be dynamic using props
- */
+import React, { useState } from "react";
+import "./App.css";
 
-import { useState } from "react";
+const productList = [
+  {
+    id: "111111",
+    name: "Keyboard",
+    stock: 10,
+    price: 2000,
+  },
+  {
+    id: "111112",
+    name: "Mouse",
+    stock: 5,
+    price: 1500,
+  },
+  {
+    id: "111113",
+    name: "Head Phone",
+    stock: 8,
+    price: 3500,
+  },
+];
 
-// const ListItem = (props) => (
-//   <li style={{ listStyleType: "none", display: "flex", alignItems: "center" }}>
-//     <input type="checkbox" name="" id="" checked={props.check} />
-//     <p>
-//       {props.title}
-//       <span>{props.children}</span>
-//     </p>
-//     <button style={{ marginLeft: "auto" }}>Delete</button>
-//   </li>
-// );
-
-// const taskList = [
-//   { id: 1, text: "Title -1", checked: false },
-//   { id: 2, text: "Title -2", checked: false },
-//   { id: 3, text: "Title -3", checked: false },
-//   { id: 4, text: "Title -4", checked: true },
-//   { id: 5, text: "Title -5", checked: false },
-//   { id: 6, text: "Title -6", checked: false },
-//   { id: 7, text: "Title -7", checked: true },
-//   { id: 8, text: "Title -8", checked: false },
-//   { id: 9, text: "Title -9", checked: true },
-//   { id: 10, text: "Title -10", checked: false },
-//   { id: 11, text: "Title -11", checked: false },
-// ];
-
-// const taskLi = taskList.map((item) => {
-//   const li = document.createElement("li");
-//   li.text = item.text;
-// });
-
-// const App = (props) => {
-//   return (
-//     <div>
-//       <ul>
-//         {taskList.map((item) => (
-//           <ListItem
-//             key={item.id}
-//             title={item.text}
-//             check={item.checked}
-//           ></ListItem>
-//         ))}
-//       </ul>
-//     </div>
-//   );
-// };
-
-const ProductListItem = ({ productName, stock }) => {
-  const [count, setCount] = useState(0);
-
-  // let count = 0;
-
-  const increment = () => {
-    if (count < stock) {
-      setCount(count + 1);
-    }
-  };
-  const decrement = () => {
-    if (count > 0) {
-      setCount(count - 1);
-    }
-  };
+const TableRow = ({
+  id,
+  name,
+  stock,
+  price,
+  quantity,
+  total,
+  increment,
+  decrement,
+}) => {
   return (
-    <div>
-      <h1>
-        Count: {count}/ {stock}
-      </h1>
-      <p>{productName}</p>
-      <button onClick={decrement} disabled={count === 0}>
-        Decrement
-      </button>
-
-      <button onClick={increment} disabled={count === stock}>
-        Increment
-      </button>
-    </div>
+    <tr>
+      <td>{id}</td>
+      <td>{name}</td>
+      <td>{stock}</td>
+      <td>{price}</td>
+      <td>{quantity}</td>
+      <td>{total}</td>
+      <td>
+        <button disabled={quantity === 0} onClick={() => decrement(id)}>
+          -
+        </button>
+        <button disabled={quantity === stock} onClick={() => increment(id)}>
+          +
+        </button>
+      </td>
+    </tr>
   );
 };
 
 const App = () => {
+  const [products, setProduct] = useState(
+    productList.map((item) => ({ ...item, quantity: 0, total: 0 }))
+  );
+
+  const incrementQuantity = (id) => {
+    setProduct(
+      products.map((product) => {
+        if (id === product.id && product.stock > product.quantity) {
+          product.quantity++;
+          product.total = product.quantity * product.price;
+        }
+        return product;
+      })
+    );
+  };
+
+  const decrementQuantity = (id) => {
+    setProduct(
+      products.map((product) => {
+        if (id === product.id && product.quantity > 0) {
+          product.quantity--;
+          product.total = product.quantity * product.price;
+        }
+        return product;
+      })
+    );
+  };
+  const total = products.reduce((acc, cur) => acc + cur.total, 0);
+
   return (
     <div>
-      <ProductListItem productName="Keyboard" stock={15} />
-      <ProductListItem productName="Mouse" stock={5} />
+      <h1>Product List</h1>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Stock</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Total</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {products.map((item) => (
+            <TableRow
+              {...item}
+              key={item.id}
+              increment={incrementQuantity}
+              decrement={decrementQuantity}
+            />
+          ))}
+        </tbody>
+        {total > 0 && (
+          <tfoot>
+            <tr>
+              <td colSpan={6}>Total Price: </td>
+              <td>{total}</td>
+            </tr>
+          </tfoot>
+        )}
+      </table>
     </div>
   );
 };
