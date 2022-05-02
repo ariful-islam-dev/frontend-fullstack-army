@@ -1,6 +1,73 @@
-table,
-th,
-td {
-  border: 1px solid black;
-  border-collapse: collapse;
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  color: #212121;
+}
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+.dayCard {
+  width: 300px;
+  padding: 1rem;
+  background: oldlace;
+  border-radius: 0.25rem;
+  box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.2);
+}
+
+.title {
+  font-style: 1.5rem;
+  font-weight: 800;
+  text-align: center;
+}
+.subTitle {
+  font-size: 1.2rem;
+  font-weight: 500;
+  text-align: center;
+}
+ul.tagUl {
+  margin-top: 1rem;
+}
+
+ul.tagUl li {
+  list-style: none;
+}
+
+.line {
+  width: 13rem;
+  height: 2px;
+  background: #212121;
+}
+
+.nodes {
+  line-height: 1.5;
+  margin-top: 1rem;
+}
+
+.comments {
+  margin-top: 1rem;
+}
+.commentItem h3 {
+  font-weight: 600;
+  font-size: 1.2rem;
+}
+.commentItem p {
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
+ul.task {
+  margin-top: 1rem;
+  padding: 1rem;
+}
+
+ul.task li {
+  list-style: none;
+  margin-bottom: 2.5rem;
+}
+
+.cardGroup {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
 }
