@@ -27,6 +27,7 @@ const App = () => {
   const [inputState, setInputState] = useState(initialInputState);
   const [result, setResult] = useState(0);
   const [histories, setHistories] = useState([]);
+  const [restoreHistory, setRestoreHistory] = useState(null);
 
   const handleInputState = (e) => {
     setInputState({
@@ -63,6 +64,12 @@ const App = () => {
   const handleClearOps = () => {
     setInputState({ ...initialInputState });
     setResult(0);
+  };
+
+  const handleRestoreHistory = (historyItem) => {
+    setInputState({ ...historyItem.input });
+    setResult(historyItem.result);
+    setRestoreHistory(historyItem.id);
   };
 
   return (
@@ -113,7 +120,15 @@ const App = () => {
                     {historyItem.date.toLocaleDateString()}{" "}
                     {historyItem.date.toLocaleTimeString()}
                   </small>
-                  <button>restore</button>
+                  <button
+                    onClick={() => handleRestoreHistory(historyItem)}
+                    disabled={
+                      restoreHistory != null &&
+                      restoreHistory === historyItem.id
+                    }
+                  >
+                    restore
+                  </button>
                 </li>
               ))}
           </ul>
