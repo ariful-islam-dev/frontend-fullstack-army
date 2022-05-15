@@ -7,6 +7,10 @@
  *
  */
 import React, { useState } from "react";
+import "./App.css";
+import HistoryListItem from "./HistoryListItem";
+import InputField from "./InputField";
+import OperationButton from "./OperationButton";
 
 const initialInputState = {
   a: 0,
@@ -73,66 +77,46 @@ const App = () => {
   };
 
   return (
-    <div style={{ width: "50%", margin: "0 auto" }}>
-      <h1>Result: {result}</h1>
-      <div>
-        <p>Input</p>
-        <input
-          type="number"
-          name="a"
-          value={inputState.a}
-          onChange={handleInputState}
-        />{" "}
-        <br />
-        <br />
-        <input
-          type="number"
-          name="b"
-          value={inputState.b}
-          onChange={handleInputState}
-        />
-      </div>
-      <div>
-        <p>Operators</p>
-        <button onClick={() => handleArithmeticOps("+")}>+</button>
-        <button onClick={() => handleArithmeticOps("-")}>-</button>
-        <button onClick={() => handleArithmeticOps("*")}>*</button>
-        <button onClick={() => handleArithmeticOps("/")}>/</button>
-        <button onClick={() => handleArithmeticOps("%")}>%</button>
-        <button onClick={handleClearOps}>Clear</button>
-      </div>
-      <div>
-        <p>History</p>
-        {histories.length === 0 ? (
-          <p>
-            <small>There is no history here</small>
-          </p>
-        ) : (
-          <ul>
-            {histories &&
-              histories.map((historyItem) => (
-                <li key={historyItem.id}>
-                  <p>
-                    Operation: {historyItem.a} {historyItem.operation}{" "}
-                    {historyItem.b}, result: {historyItem.result}
-                  </p>{" "}
-                  <small>
-                    {historyItem.date.toLocaleDateString()}{" "}
-                    {historyItem.date.toLocaleTimeString()}
-                  </small>
-                  <button
-                    onClick={() => handleRestoreHistory(historyItem)}
-                    disabled={
-                      restoreHistory != null &&
-                      restoreHistory === historyItem.id
-                    }
-                  >
-                    restore
-                  </button>
-                </li>
-              ))}
-          </ul>
-        )}
+    <div className="rootArea">
+      <div className="calculationArea">
+        <h1>Result: {result}</h1>
+        <div className="inputArea">
+          <p>Input</p>
+
+          {Object.entries(inputState).map((item, i) => (
+            <InputField
+              key={i}
+              name={item[0]}
+              value={item[1]}
+              handleInputState={handleInputState}
+            />
+          ))}
+        </div>
+        <div className="operateArea">
+          <p>Operators</p>
+          <OperationButton handleArithmeticOps={handleArithmeticOps} />
+          <button onClick={handleClearOps}>Clear</button>
+        </div>
+        <div className="historyArea">
+          <p>History</p>
+          {histories.length === 0 ? (
+            <p>
+              <small>There is no history here</small>
+            </p>
+          ) : (
+            <ul>
+              {histories &&
+                histories.map((historyItem) => (
+                  <HistoryListItem
+                    key={historyItem.id}
+                    historyItem={historyItem}
+                    handleRestoreHistory={handleRestoreHistory}
+                    restoreHistory={restoreHistory}
+                  />
+                ))}
+            </ul>
+          )}
+        </div>
       </div>
     </div>
   );
