@@ -1,63 +1,51 @@
-/**
- * @Done: Handle User Input
- * @Done: Handle Operations
- * @TODO: List of histories
- * @TODO: Render History list
- * @TODO: Restore the History
- *
- */
 import React, { useState } from "react";
-import "./App.css";
-import HistoryListItem from "./HistoryListItem";
-import InputField from "./InputField";
-import OperationButton from "./OperationButton";
+import Histories from "./Components/Histories/Histories";
+import Inputs from "./Components/Inputs/Inputs";
+import Operations from "./Components/Operations/Operations";
+import { getId } from "./utils/utils";
 
-const initialInputState = {
+const style = {
+  width: "50%",
+  margin: "0 auto",
+  background: "#51b3a5",
+  padding: "2rem",
+  borderRadius: "1rem",
+};
+
+const initialInputs = {
   a: 0,
   b: 0,
 };
 
-function* generateId() {
-  let id = 0;
-
-  while (true) {
-    yield id++;
-  }
-}
-
-const getId = generateId();
-
 const App = () => {
-  const [inputState, setInputState] = useState(initialInputState);
+  const [inputState, setInputState] = useState(initialInputs);
   const [result, setResult] = useState(0);
   const [histories, setHistories] = useState([]);
-  const [restoreHistory, setRestoreHistory] = useState(null);
+  const [historyRestore, setHistoryRestore] = useState(null);
 
-  const handleInputState = (e) => {
+  const handleInputChange = (e) => {
     setInputState({
       ...inputState,
-      [e.target.name]: parseInt(e.target.value),
+      [e.target.name]: e.target.value,
     });
   };
 
-  const handleArithmeticOps = (operators) => {
+  const handleArithmeticOps = (operation) => {
     if (!inputState.a || !inputState.b) {
-      alert("Invalid Inputs");
+      alert("Invalid Input");
       return;
     }
-
-    const f = new Function(
-      "operators",
-      `return ${inputState.a} ${operators} ${inputState.b}`
+    const f = Function(
+      "operation",
+      `return ${inputState.a}${operation}${inputState.b}`
     );
-
-    const result = f(operators);
+    const result = f(operation);
     setResult(result);
 
     const historyItem = {
       id: getId.next().value,
-      input: { ...inputState },
-      operation: operators,
+      inputs: { ...inputState },
+      operation,
       result,
       date: new Date(),
     };
@@ -66,58 +54,37 @@ const App = () => {
   };
 
   const handleClearOps = () => {
-    setInputState({ ...initialInputState });
+    setInputState(initialInputs);
     setResult(0);
   };
-
-  const handleRestoreHistory = (historyItem) => {
-    setInputState({ ...historyItem.input });
-    setResult(historyItem.result);
-    setRestoreHistory(historyItem.id);
+  const handleRestore = (item) => {
+    setInputState(item.inputs);
+    setResult(item.result);
+    setHistoryRestore(item.id);
   };
 
   return (
-    <div className="rootArea">
-      <div className="calculationArea">
-        <h1>Result: {result}</h1>
-        <div className="inputArea">
-          <p>Input</p>
-
-          {Object.entries(inputState).map((item, i) => (
-            <InputField
-              key={i}
-              name={item[0]}
-              value={item[1]}
-              handleInputState={handleInputState}
-            />
-          ))}
-        </div>
-        <div className="operateArea">
-          <p>Operators</p>
-          <OperationButton handleArithmeticOps={handleArithmeticOps} />
-          <button onClick={handleClearOps}>Clear</button>
-        </div>
-        <div className="historyArea">
-          <p>History</p>
-          {histories.length === 0 ? (
-            <p>
-              <small>There is no history here</small>
-            </p>
-          ) : (
-            <ul>
-              {histories &&
-                histories.map((historyItem) => (
-                  <HistoryListItem
-                    key={historyItem.id}
-                    historyItem={historyItem}
-                    handleRestoreHistory={handleRestoreHistory}
-                    restoreHistory={restoreHistory}
-                  />
-                ))}
-            </ul>
-          )}
-        </div>
-      </div>
+    <div style={style}>
+      <h1
+        style={{
+          color: "purple",
+          textShadow: "2px 0 #ed9b09",
+          fontSize: "40px",
+          fontFamily: "Arial",
+        }}
+      >
+        Result: {result}
+      </h1>
+      <Inputs inputs={inputState} handleInputChange={handleInputChange} />
+      <Operations
+        handleArithmeticOps={handleArithmeticOps}
+        handleClearOps={handleClearOps}
+      />
+      <Histories
+        historyRestore={historyRestore}
+        histories={histories}
+        handleRestore={handleRestore}
+      />
     </div>
   );
 };
