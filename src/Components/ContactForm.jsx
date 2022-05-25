@@ -20,6 +20,7 @@ const ContactForm = ({ getContact }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     getContact(values);
+    setValues(CONTACT_FORM_INIT_STATE);
   };
 
   return (

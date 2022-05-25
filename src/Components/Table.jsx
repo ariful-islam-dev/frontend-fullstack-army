@@ -17,21 +17,39 @@ const Table = ({ contacts }) => {
   if (filter === "All") {
     filteredContacts = searchTerm ? contacts.filter(searchCB) : contacts;
   } else {
-    filteredContacts = contacts.filter(
-      (contact) => contact.group === filter && searchCB(contact)
-    );
+    filteredContacts = contacts.filter((contact) => contact.group === filter);
   }
+
+  console.log(filteredContacts, filter);
   return (
-    <div>
+    <div style={{ padding: "2rem" }}>
+      <div
+        style={{
+          width: "100%",
+        }}
+      >
+        Filters:{" "}
+        <select value={filter} onChange={handleFilterChange}>
+          <option value="All">All</option>
+          <option value="Home">Home</option>
+          <option value="Office">Office</option>
+        </select>
+        <input
+          type="search"
+          placeholder="search"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </div>
       <table style={{ border: "1px solid #000" }}>
-        <thead>
+        <thead style={{ border: "1px solid #000" }}>
           <tr>
             <th>Name:</th>
             <th>Email:</th>
             <th>Group</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody style={{ border: "1px solid #000" }}>
           {filteredContacts.map((contact, index) => (
             <tr key={index}>
               <td>{contact.name}</td>

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import "./App.css";
 import ContactForm from "./Components/ContactForm";
 import Table from "./Components/Table";
 
