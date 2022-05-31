@@ -4,4 +4,4 @@
 
 ### Practice Project
 
-- [x] Using Operators
+- [x] Styled Component
