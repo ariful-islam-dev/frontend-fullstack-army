@@ -6,7 +6,7 @@ import Label from "../../ui/texts/Label";
 const Container = styled.div`
   width: 100%;
   padding: 1rem;
-  border: 1px solid #e1e1e1;
+  /* border: 1px solid #e1e1e1; */
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -30,10 +30,13 @@ const InputGroup = ({
     <Container>
       <Label htmlFor={name}>{label}</Label>
       <TextInput
-        name="name"
-        id="name"
+        name={name}
+        id={name}
         placeholder={placeholder ?? ""}
         value={value ?? ""}
+        onChange={onChange}
+        onFocus={onFocus}
+        onBlur={onBlur}
       />
       {error && <ErrorMessage>{error}</ErrorMessage>}
     </Container>
