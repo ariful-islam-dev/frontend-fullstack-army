@@ -1,30 +1,51 @@
 import React, { useState } from "react";
 import InputGroup from "../components/shear/Label/InputGroup";
 import Button from "../components/ui/buttons/Button";
+import { deepClone } from "../utils/object-utils";
 
 const init = {
-  title: "",
-  bio: "",
-  skills: "",
+  title: {
+    value: "",
+    error: "",
+    focus: false,
+  },
+  bio: {
+    value: "",
+    error: "",
+    focus: false,
+  },
+  skills: {
+    value: "",
+    error: "",
+    focus: false,
+  },
 };
 
 const App = () => {
-  const [values, setValues] = useState({ ...init });
-  const [errors, setErrors] = useState({ ...init });
-  const [focuses, setFocuses] = useState({
-    title: false,
-    bio: false,
-    skills: false,
-  });
+  const [state, setState] = useState(deepClone(init));
+  const [hasError, setHasErrors] = useState(false);
 
+  const mapStateToValues = (state) => {
+    return Object.keys(state).reduce((acc, cur) => {
+      acc[cur] = state[cur].value;
+      return acc;
+    }, {});
+  };
+
+  // Change Handler
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setValues((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    const { name: key, value } = e.target;
+    const oldState = deepClone(state);
+    const values = mapStateToValues(oldState);
+    oldState[key].value = value;
     const { errors } = checkValidate(values);
-    if (!errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
+
+    if (oldState[key].focus && errors[key]) {
+      oldState[key].error = errors[key];
+    } else {
+      oldState[key].error = "";
+    }
+    setState(oldState);
   };
 
   const checkValidate = (values) => {
@@ -44,35 +65,39 @@ const App = () => {
 
   //Focus Handler
   const handleFocus = (e) => {
-    setFocuses((prev) => ({ ...prev, [e.target.name]: true }));
+    const { name } = e.target;
+    const oldState = deepClone(state);
+    oldState[name].focus = true;
+    setState(oldState);
   };
 
   // Blur Handler
   const handleBlur = (e) => {
     const key = e.target.name;
+    const values = mapStateToValues(state);
     const { errors } = checkValidate(values);
-
-    if (errors[key] && focuses[key] === true) {
-      setErrors((prev) => ({
-        ...prev,
-        [key]: errors[key],
-      }));
+    const oldState = deepClone(state);
+    if (oldState[key].focus && errors[key]) {
+      oldState[key].error = errors[key];
     } else {
-      setErrors((prev) => ({
-        ...prev,
-        [key]: "",
-      }));
+      oldState[key].error = "";
     }
+    setState(oldState);
   };
 
   // submit Handler
   const handleSubmit = (e) => {
     e.preventDefault();
+    const values = mapStateToValues(state);
     const { isValid, errors } = checkValidate(values);
     if (isValid) {
-      setErrors({ ...errors });
+      console.log(state);
     } else {
-      setErrors({ ...errors });
+      const oldState = deepClone(state);
+      Object.keys(errors).forEach((key) => {
+        oldState[key].error = errors[key];
+      });
+      setState(oldState);
     }
   };
   return (
@@ -81,30 +106,30 @@ const App = () => {
         <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
           <InputGroup
             name={"title"}
-            value={values.title}
+            value={state.title.value}
             placeholder={"Enter Your Title"}
             label={"Title"}
-            error={errors.title}
+            error={state.title.error}
             onChange={handleChange}
             onFocus={handleFocus}
             onBlur={handleBlur}
           />
           <InputGroup
             name={"bio"}
-            value={values.bio}
+            value={state.bio.value}
             placeholder={"Hi, I am a web developer........"}
             label={"Bio"}
-            error={errors.bio}
+            error={state.bio.error}
             onChange={handleChange}
             onFocus={handleFocus}
             onBlur={handleBlur}
           />
           <InputGroup
             name={"skills"}
-            value={values.skills}
+            value={state.skills.value}
             placeholder={"Enter Your Earned Skills"}
             label={"Skills"}
-            error={errors.skills}
+            error={state.skills.error}
             onChange={handleChange}
             onFocus={handleFocus}
             onBlur={handleBlur}
