@@ -1,141 +1,94 @@
-import React, { useState } from "react";
-import InputGroup from "../components/shear/Label/InputGroup";
-import Button from "../components/ui/buttons/Button";
-import { deepClone } from "../utils/object-utils";
+import React from "react";
+import InputGroup from "../components/sheared/forms/InputGroup";
+import useHookForm from "../hooks/useHookForm";
 
 const init = {
-  title: {
-    value: "",
-    error: "",
-    focus: false,
-  },
-  bio: {
-    value: "",
-    error: "",
-    focus: false,
-  },
-  skills: {
-    value: "",
-    error: "",
-    focus: false,
-  },
+  firstName: "",
+  lastName: "",
+  email: "",
+  password: "",
+};
+
+const validate = (values) => {
+  const errors = {};
+
+  if (!values.firstName) {
+    errors.firstName = "First Name is Required";
+  }
+  if (!values.lastName) {
+    errors.lastName = "Last Name is Required";
+  }
+  if (!values.email) {
+    errors.email = "Email is Required";
+  }
+  if (!values.password) {
+    errors.password = "Password is Required";
+  } else if (values.password.length < 6) {
+    errors.password = "Password length must be 6 character";
+  }
+
+  return errors;
 };
 
 const App = () => {
-  const [state, setState] = useState(deepClone(init));
-  const [hasError, setHasErrors] = useState(false);
-
-  const mapStateToValues = (state) => {
-    return Object.keys(state).reduce((acc, cur) => {
-      acc[cur] = state[cur].value;
-      return acc;
-    }, {});
-  };
-
-  // Change Handler
-  const handleChange = (e) => {
-    const { name: key, value } = e.target;
-    const oldState = deepClone(state);
-    const values = mapStateToValues(oldState);
-    oldState[key].value = value;
-    const { errors } = checkValidate(values);
-
-    if (oldState[key].focus && errors[key]) {
-      oldState[key].error = errors[key];
+  const cb = ({ hasError, errors, values }) => {
+    if (hasError) {
+      alert(`[ERROR] ${JSON.stringify(errors)}`);
     } else {
-      oldState[key].error = "";
-    }
-    setState(oldState);
-  };
-
-  const checkValidate = (values) => {
-    const errors = {};
-
-    const { title, bio, skills } = values;
-
-    if (!title) errors.title = "Invalid Title";
-    if (!bio) errors.bio = "Invalid Bio";
-    if (!skills) errors.skills = "Invalid Skills";
-
-    return {
-      errors,
-      isValid: Object.keys(errors).length === 0,
-    };
-  };
-
-  //Focus Handler
-  const handleFocus = (e) => {
-    const { name } = e.target;
-    const oldState = deepClone(state);
-    oldState[name].focus = true;
-    setState(oldState);
-  };
-
-  // Blur Handler
-  const handleBlur = (e) => {
-    const key = e.target.name;
-    const values = mapStateToValues(state);
-    const { errors } = checkValidate(values);
-    const oldState = deepClone(state);
-    if (oldState[key].focus && errors[key]) {
-      oldState[key].error = errors[key];
-    } else {
-      oldState[key].error = "";
-    }
-    setState(oldState);
-  };
-
-  // submit Handler
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const values = mapStateToValues(state);
-    const { isValid, errors } = checkValidate(values);
-    if (isValid) {
-      console.log(state);
-    } else {
-      const oldState = deepClone(state);
-      Object.keys(errors).forEach((key) => {
-        oldState[key].error = errors[key];
-      });
-      setState(oldState);
+      alert(`[SUCCESS] ${JSON.stringify(values)}`);
     }
   };
+  const { state, handleBlur, handleChange, handleFocus, handleSubmit, clear } =
+    useHookForm(init, validate);
+
+  console.log(state);
   return (
-    <div className="root">
-      <form onSubmit={handleSubmit}>
-        <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
+    <div>
+      <h1>My Custom Hook Form</h1>
+      <form onSubmit={(e) => handleSubmit(e, cb)}>
+        <div>
           <InputGroup
-            name={"title"}
-            value={state.title.value}
-            placeholder={"Enter Your Title"}
-            label={"Title"}
-            error={state.title.error}
+            label={"First Name"}
+            name={"firstName"}
+            value={state.firstName.value}
+            placeholder={"John"}
+            error={state.firstName.error}
             onChange={handleChange}
-            onFocus={handleFocus}
             onBlur={handleBlur}
+            onFocus={handleFocus}
           />
           <InputGroup
-            name={"bio"}
-            value={state.bio.value}
-            placeholder={"Hi, I am a web developer........"}
-            label={"Bio"}
-            error={state.bio.error}
+            label={"Last Name"}
+            name={"lastName"}
+            value={state.lastName.value}
+            placeholder={"Doe"}
+            error={state.lastName.error}
             onChange={handleChange}
-            onFocus={handleFocus}
             onBlur={handleBlur}
+            onFocus={handleFocus}
+          />
+
+          <InputGroup
+            label={"Email Address"}
+            name={"email"}
+            value={state.email.value}
+            placeholder={"example@xxx.com"}
+            error={state.email.error}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            onFocus={handleFocus}
           />
           <InputGroup
-            name={"skills"}
-            value={state.skills.value}
-            placeholder={"Enter Your Earned Skills"}
-            label={"Skills"}
-            error={state.skills.error}
+            label={"Your Password"}
+            name={"password"}
+            value={state.password.value}
+            placeholder={"**************"}
+            error={state.password.error}
             onChange={handleChange}
-            onFocus={handleFocus}
             onBlur={handleBlur}
+            onFocus={handleFocus}
           />
         </div>
-        <Button type="submit">Submit</Button>
       </form>
     </div>
   );
